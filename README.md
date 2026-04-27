@@ -6,33 +6,33 @@ Full-stack e-commerce application with separate admin dashboard.
 
 ```
 StyleStore/
-├── backend/          # Node.js + Express + MongoDB
-├── frontend/         # React + Vite (Customer facing)
-├── admin/           # React + Vite (Admin dashboard)
+├── server/           # Node.js + Express + MongoDB
+├── client/           # React + Vite (Customer facing)
+├── admin/            # React + Vite (Admin dashboard)
 └── README.md
 ```
 
 ## Setup Instructions
 
-### Backend Setup
+### Server Setup
 ```bash
-cd backend
+cd server
 npm install
 cp .env.example .env
 # Edit .env with your MongoDB URI and other credentials
 npm run dev
 ```
 
-Backend runs on: http://localhost:5000
+Server runs on: http://localhost:4000
 
-### Frontend Setup
+### Client Setup
 ```bash
-cd frontend
+cd client
 npm install
 npm run dev
 ```
 
-Frontend runs on: http://localhost:3000
+Client runs on: http://localhost:3000
 
 ### Admin Setup
 ```bash
@@ -41,7 +41,7 @@ npm install
 npm run dev
 ```
 
-Admin runs on: http://localhost:3001
+Admin runs on: http://localhost:3002
 
 ## API Endpoints
 

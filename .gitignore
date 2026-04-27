@@ -13,6 +13,10 @@ build/
 */dist/
 */build/
 
+# Uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
 # Logs
 logs
 *.log
