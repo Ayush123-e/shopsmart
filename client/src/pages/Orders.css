@@ -1,0 +1,93 @@
+.orders-container {
+    border-top: 1px solid #e2e2e2;
+    padding-top: 64px;
+}
+
+.order-item {
+    padding: 24px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .order-item {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.order-details {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.order-img {
+    width: 80px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.order-info h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111;
+}
+
+.order-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 8px;
+    color: #666;
+    font-size: 14px;
+}
+
+.order-status-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .order-status-group {
+        width: 40%;
+    }
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #4ade80;
+}
+
+.track-btn {
+    border: 1px solid #eee;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.track-btn:hover {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
