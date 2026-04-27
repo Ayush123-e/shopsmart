@@ -1,0 +1,83 @@
+name: Deploy to Amazon ECS
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  AWS_REGION: us-east-1
+  SERVER_REPOSITORY: shopsmart-server-repo
+  CLIENT_REPOSITORY: shopsmart-client-repo
+  ECS_SERVICE: shopsmart-service
+  ECS_CLUSTER: shopsmart-cluster
+  ECS_TASK_DEFINITION: task-definition.json
+  SERVER_CONTAINER_NAME: shopsmart-server
+  CLIENT_CONTAINER_NAME: shopsmart-client
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build and push Server Image
+      id: build-server-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/$SERVER_REPOSITORY:$IMAGE_TAG ./server
+        docker push $ECR_REGISTRY/$SERVER_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$SERVER_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: Build and push Client Image
+      id: build-client-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/$CLIENT_REPOSITORY:$IMAGE_TAG ./client
+        docker push $ECR_REGISTRY/$CLIENT_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$CLIENT_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: Fill in Server image ID in Task Definition
+      id: task-def-server
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.SERVER_CONTAINER_NAME }}
+        image: ${{ steps.build-server-image.outputs.image }}
+
+    - name: Fill in Client image ID in Task Definition
+      id: task-def-client
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def-server.outputs.task-definition }}
+        container-name: ${{ env.CLIENT_CONTAINER_NAME }}
+        image: ${{ steps.build-client-image.outputs.image }}
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def-client.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true

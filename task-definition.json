@@ -1,0 +1,56 @@
+{
+    "family": "shopsmart-task",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+        {
+            "name": "shopsmart-server",
+            "image": "<SERVER_IMAGE>",
+            "portMappings": [
+                {
+                    "containerPort": 4000,
+                    "hostPort": 4000,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                { "name": "NODE_ENV", "value": "production" }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/shopsmart",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "server"
+                }
+            }
+        },
+        {
+            "name": "shopsmart-client",
+            "image": "<CLIENT_IMAGE>",
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/shopsmart",
+                    "awslogs-region": "us-east-1",
+                    "awslogs-stream-prefix": "client"
+                }
+            }
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "512",
+    "memory": "1024",
+    "executionRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/ecsTaskExecutionRole",
+    "taskRoleArn": "arn:aws:iam::<AWS_ACCOUNT_ID>:role/ecsTaskExecutionRole"
+}
